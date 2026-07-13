@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark app: native selects, date pickers, scrollbars render dark. */
+:root {
+  color-scheme: dark;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0e0b1f;
+  color: #eae7f4;
+  font-family: 'DM Sans', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Native <option> elements ignore Tailwind classes on the <select>. */
+select option {
+  background-color: #171230;
+  color: #eae7f4;
+}
+
+/* Serif display face needs a touch more tracking at small sizes */
+.font-display {
+  letter-spacing: 0.01em;
+}
+
+/* ---- Signature: slow breathing glow (hero only) ----
+   An 8s inhale–exhale cycle, like watching the breath. */
+@keyframes breathe {
+  0%, 100% { transform: scale(1);    opacity: 0.35; }
+  50%      { transform: scale(1.18); opacity: 0.6;  }
+}
+.breathe-glow {
+  animation: breathe 8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .breathe-glow { animation: none; opacity: 0.4; }
+}
