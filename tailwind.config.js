@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        dark: "#0e0b1f",        // midnight indigo
-        "dark-2": "#171230",    // raised surfaces
+        dark: "#262048",        // dusk indigo (lifted, softer)
+        "dark-2": "#312a58",    // raised surfaces
         yellow: {               // → lavender violet (primary accent)
           300: "#cfc2ff",
           400: "#b5a2fb",

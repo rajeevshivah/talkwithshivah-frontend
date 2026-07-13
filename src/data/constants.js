@@ -220,7 +220,10 @@ export const STATS = [
   { num: "6+", label: "Years Exp" },
 ];
 
-export const YEARS = [
-  "1st Year", "2nd Year", "3rd Year", "4th Year",
-  "Post Graduate", "Working Professional",
+export const EXPERIENCE_LEVELS = [
+  "Never tried",
+  "Tried a few times",
+  "Sit sometimes",
+  "Regular daily practice",
+  "Years of practice",
 ];

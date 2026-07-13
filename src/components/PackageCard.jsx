@@ -15,7 +15,7 @@ export default function PackageCard({ pkg, onBook, selected, selectable }) {
       {pkg.popular && (
         <span className="absolute top-4 right-4 bg-yellow-500/15 border border-yellow-500/30
           text-yellow-400 text-xs px-2 py-0.5 rounded-full font-medium">
-          ⭐ Popular
+          Most chosen
         </span>
       )}
 
@@ -32,7 +32,7 @@ export default function PackageCard({ pkg, onBook, selected, selectable }) {
       <div className="text-gray-400 text-xs mb-4">⏱ {pkg.duration}</div>
       <div className="font-display text-3xl font-black text-yellow-400 mb-1">
         ₹{pkg.price}
-        <span className="text-gray-400 text-base font-normal">/session</span>
+        <span className="text-gray-400 text-base font-normal"> · one session</span>
       </div>
       <p className="text-gray-400 text-sm my-4">{pkg.desc}</p>
 
@@ -54,7 +54,7 @@ export default function PackageCard({ pkg, onBook, selected, selectable }) {
           className="w-full bg-gradient-to-r from-yellow-500 to-yellow-300 text-black
             font-display font-bold py-2.5 rounded-xl hover:opacity-90 transition-all"
         >
-          Book This Package
+          Book This Session
         </button>
       )}
     </div>

@@ -16,8 +16,10 @@
 }
 
 body {
-  background: #0e0b1f;
-  color: #eae7f4;
+  /* Dusk sky: deeper above, a faint warm glow toward the horizon */
+  background: linear-gradient(180deg, #221c40 0%, #2a2350 45%, #3a2f60 100%) fixed;
+  background-color: #2a2350;
+  color: #f0edf8;
   font-family: 'DM Sans', sans-serif;
 }
 
@@ -27,7 +29,7 @@ html {
 
 /* Native <option> elements ignore Tailwind classes on the <select>. */
 select option {
-  background-color: #171230;
+  background-color: #312a58;
   color: #eae7f4;
 }
 

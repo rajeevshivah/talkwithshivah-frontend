@@ -4,7 +4,7 @@
 // Slots fetched from database, calendar has month navigation
 // ============================================================
 import { useState, useEffect } from "react";
-import { YEARS } from "../data/constants";
+import { EXPERIENCE_LEVELS } from "../data/constants";
 import { packageAPI } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
@@ -252,12 +252,12 @@ const handleUpiBooking = async () => {
         ← Back to Home
       </button>
 
-      <h1 className="font-display text-3xl font-black mb-2">Book Your Session</h1>
-      <p className="text-gray-400 mb-8">Complete your booking in 4 simple steps</p>
+      <h1 className="font-display text-4xl font-semibold mb-2">Book a Session</h1>
+      <p className="text-gray-400 mb-8">A few unhurried steps, and we have a time to sit</p>
 
       {/* ---- Step Indicators ---- */}
       <div className="flex gap-2 mb-4">
-        {["Package", "Schedule", "Details", "Payment"].map((s, i) => (
+        {["Session", "Time", "About You", "Payment"].map((s, i) => (
           <div key={s} className="flex-1 text-center">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center
               text-sm font-bold font-display mx-auto mb-1 transition-all
@@ -455,7 +455,7 @@ const handleUpiBooking = async () => {
       ============================================================ */}
       {step === 3 && (
         <div>
-          <h3 className="font-display font-bold text-lg mb-2">Tell me about yourself</h3>
+          <h3 className="font-display font-bold text-xl mb-2">A little about you</h3>
           <p className="text-gray-400 text-sm mb-6">
             {user
               ? "✓ Some details auto-filled from your profile — update if needed"
@@ -467,7 +467,7 @@ const handleUpiBooking = async () => {
               ["name", "Full Name *", "Rajeev Ranjan", "text"],
               ["email", "Email *", "you@email.com", "email"],
               ["phone", "Phone *", "+91 98765 43210", "tel"],
-              ["college", "College / University", "VIT, DTU, NIT...", "text"],
+              ["college", "Occupation (optional)", "Student, engineer, homemaker...", "text"],
             ].map(([key, label, ph, type]) => (
               <div key={key}>
                 <label className="block text-xs text-gray-400 mb-1.5">{label}</label>
@@ -482,49 +482,49 @@ const handleUpiBooking = async () => {
             ))}
 
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Current Year</label>
+              <label className="block text-xs text-gray-400 mb-1.5">Where are you with meditation?</label>
               <select
                 value={form.year}
                 onChange={(e) => setForm({ ...form, year: e.target.value })}
                 className={inputClass}
               >
-                <option value="">Select Year</option>
-                {YEARS.map((y) => (
+                <option value="">Choose one</option>
+                {EXPERIENCE_LEVELS.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Current Skills</label>
+              <label className="block text-xs text-gray-400 mb-1.5">What does your practice look like now? (optional)</label>
               <input
                 value={form.skills}
                 onChange={(e) => setForm({ ...form, skills: e.target.value })}
-                placeholder="HTML, CSS, Python basics..."
+                placeholder="Apps tried, techniques, or nothing yet — all fine"
                 className={inputClass}
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs text-gray-400 mb-1.5">Your Goals *</label>
+              <label className="block text-xs text-gray-400 mb-1.5">What brings you to this session? *</label>
               <textarea
                 value={form.goals}
                 onChange={(e) => setForm({ ...form, goals: e.target.value })}
                 rows={2}
-                placeholder="e.g. Get a MERN stack job in 6 months, land a startup internship..."
+                placeholder="A restless mind, a dry practice, a question that won't leave — say it plainly"
                 className={`${inputClass} resize-none`}
               />
             </div>
 
             <div className="md:col-span-2">
               <label className="block text-xs text-gray-400 mb-1.5">
-                Questions to Ask (optional)
+                Anything you'd like me to know before we sit? (optional)
               </label>
               <textarea
                 value={form.questions}
                 onChange={(e) => setForm({ ...form, questions: e.target.value })}
                 rows={2}
-                placeholder="What specific questions do you have? The more detail, the better!"
+                placeholder="Health considerations, background, or anything else"
                 className={`${inputClass} resize-none`}
               />
             </div>
