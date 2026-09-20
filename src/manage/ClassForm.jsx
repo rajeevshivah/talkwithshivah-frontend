@@ -6,6 +6,7 @@ import { classesAdminAPI } from "../utils/classesApi";
 import { slugify } from "../utils/classFormat";
 import { useToast } from "../context/ToastContext";
 import { input, btnPrimary, btnGhost, label } from "./ui";
+import { parseClassJson, normalizeClass, formToJson, AI_PROMPT, copyText } from "./classJson";
 
 // <input type="datetime-local"> wants local "YYYY-MM-DDTHH:mm"
 const toLocalInput = (d) => {
@@ -44,7 +45,10 @@ export default function ClassForm({ initial, onDone, onCancel }) {
   const { showToast } = useToast();
   const isNew = !initial?._id;
   const [f, setF] = useState(() => (initial ? { ...EMPTY, ...initial } : EMPTY));
-  const [slugTouched, setSlugTouched] = useState(!isNew);
+  const [slugTouched, setSlugTouched] = useState(!isNew || !!initial?.slug);
+  const [jsonOpen, setJsonOpen] = useState(false);
+  const [jsonText, setJsonText] = useState("");
+  const [jsonMsg, setJsonMsg] = useState(null); // { type: "error" | "ok", text }
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -68,6 +72,35 @@ export default function ClassForm({ initial, onDone, onCancel }) {
       };
     });
   const removeSession = (i) => setF((p) => ({ ...p, sessions: p.sessions.filter((_, j) => j !== i) }));
+
+  const copy = async (value, msg) => {
+    const ok = await copyText(value);
+    showToast(ok ? msg : "Couldn't copy — select the text and copy manually", ok ? "success" : "error");
+  };
+
+  // Paste JSON → fill every field of this form (nothing is saved yet)
+  const fillFromJson = () => {
+    try {
+      const raw = parseClassJson(jsonText);
+      const { data, errors, warnings } = normalizeClass(raw[0], 0);
+      if (!data) throw new Error(errors[0] || "Couldn't read this class.");
+      setF((p) => ({ ...p, ...data }));
+      setSlugTouched(true);
+      const notes = [
+        ...errors.map((e) => `✕ ${e}`),
+        ...warnings.map((w) => `⚠ ${w}`),
+        ...(raw.length > 1 ? [`⚠ The JSON has ${raw.length} classes — only the first was used. Use "Import JSON" on the classes list for several.`] : []),
+      ];
+      setJsonMsg({
+        type: errors.length ? "error" : "ok",
+        text: errors.length
+          ? `Form filled, but fix these before saving:\n${notes.join("\n")}`
+          : `Form filled — check it below, then ${isNew ? "Create class" : "Save changes"}.${notes.length ? "\n" + notes.join("\n") : ""}`,
+      });
+    } catch (err) {
+      setJsonMsg({ type: "error", text: err.message });
+    }
+  };
 
   const save = async (e) => {
     e.preventDefault();
@@ -113,6 +146,43 @@ export default function ClassForm({ initial, onDone, onCancel }) {
         <h2 className="font-display text-3xl font-semibold">{isNew ? "New class" : "Edit class"}</h2>
         <button type="button" onClick={onCancel} className={btnGhost}>Cancel</button>
       </div>
+
+      {/* ---- Fill from JSON ---- */}
+      <section className="border border-white/10 rounded-xl">
+        <button type="button" onClick={() => setJsonOpen((o) => !o)}
+          className="w-full flex items-center justify-between px-4 py-3 text-sm text-left"
+          aria-expanded={jsonOpen}>
+          <span>
+            <span className="text-white">Fill from JSON</span>
+            <span className="text-gray-500 ml-2">Paste class data made by AI</span>
+          </span>
+          <span className={`text-gray-400 transition-transform ${jsonOpen ? "rotate-180" : ""}`}>▾</span>
+        </button>
+        {jsonOpen && (
+          <div className="px-4 pb-4 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={() => copy(AI_PROMPT, "Format copied — paste it into your AI chat")} className={btnGhost}>
+                Copy format for AI
+              </button>
+              <button type="button" onClick={() => copy(JSON.stringify(formToJson(f), null, 2), "This class copied as JSON")} className={btnGhost}>
+                Copy this class as JSON
+              </button>
+            </div>
+            <textarea className={`${input} font-mono text-xs min-h-[180px]`} value={jsonText}
+              onChange={(e) => { setJsonText(e.target.value); setJsonMsg(null); }}
+              placeholder='{ "title": "…", "sessions": [ { "title": "…", "startsAt": "2026-10-05T19:00" } ], … }'
+              spellCheck={false} />
+            {jsonMsg && (
+              <p className={`text-sm whitespace-pre-line ${jsonMsg.type === "error" ? "text-red-300" : "text-green-300"}`} role="status">
+                {jsonMsg.text}
+              </p>
+            )}
+            <button type="button" onClick={fillFromJson} disabled={!jsonText.trim()} className={btnPrimary}>
+              Fill form
+            </button>
+          </div>
+        )}
+      </section>
 
       {/* ---- Basics ---- */}
       <section className="space-y-4">

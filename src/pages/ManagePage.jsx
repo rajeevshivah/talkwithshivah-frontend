@@ -11,6 +11,7 @@ import { useToast } from "../context/ToastContext";
 import ClassForm from "../manage/ClassForm";
 import RegistrationsPanel from "../manage/RegistrationsPanel";
 import UpiSettings from "../manage/UpiSettings";
+import ImportPanel from "../manage/ImportPanel";
 import { input, btnPrimary, btnGhost, label } from "../manage/ui";
 
 export default function ManagePage() {
@@ -93,6 +94,7 @@ function Dashboard({ onAuthLost }) {
   const [upiMissing, setUpiMissing] = useState(false);
   const [editing, setEditing] = useState(null);   // null | {} (new) | class
   const [viewing, setViewing] = useState(null);   // class whose registrations are open
+  const [importing, setImporting] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -127,9 +129,18 @@ function Dashboard({ onAuthLost }) {
 
   if (editing) {
     return (
-      <ClassForm initial={editing._id ? editing : null}
+      // {} = blank new class; object without _id = new class prefilled from JSON
+      <ClassForm initial={Object.keys(editing).length ? editing : null}
         onCancel={() => setEditing(null)}
         onDone={() => { setEditing(null); load(); }} />
+    );
+  }
+  if (importing) {
+    return (
+      <ImportPanel
+        onBack={() => setImporting(false)}
+        onReview={(data) => { setImporting(false); setEditing(data); }}
+        onDone={() => { setImporting(false); load(); }} />
     );
   }
   if (viewing) {
@@ -167,7 +178,10 @@ function Dashboard({ onAuthLost }) {
                 <p className="text-teal-300 text-sm mt-1">{pendingTotal} registration{pendingTotal === 1 ? "" : "s"} waiting for approval</p>
               )}
             </div>
-            <button onClick={() => setEditing({})} className={btnPrimary}>New class</button>
+            <div className="flex gap-2">
+              <button onClick={() => setImporting(true)} className={btnGhost}>Import JSON</button>
+              <button onClick={() => setEditing({})} className={btnPrimary}>New class</button>
+            </div>
           </div>
 
           {classes === null && <p className="text-gray-400 text-sm">Loading…</p>}
