@@ -7,6 +7,7 @@ export default function Navbar({ currentPage, setCurrentPage, setShowAuth }) {
 
   const links = [
     { id: "home", label: "Home" },
+    { id: "classes", label: "Classes" },
     { id: "booking", label: "Book Session" },
     { id: "dashboard", label: "My Bookings" },
   ];

@@ -9,6 +9,9 @@
 //   /dashboard       → Student dashboard
 //   /admin           → redirects home (admin lives on MentorHub)
 //   /reset-password  → Password reset (?token=... from the email link)
+//   /classes         → Upcoming group classes (classes backend)
+//   /class/:slug     → One class: register / see registration status
+//   /manage          → Classes admin (own login, not linked in the navbar)
 //
 // Pages still receive a setPage(id) prop, mapped to navigation here,
 // so none of the page components needed changes.
@@ -28,6 +31,9 @@ import HomePage from "./pages/HomePage";
 import BookingPage from "./pages/BookingPage";
 import DashboardPage from "./pages/DashboardPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ClassesPage from "./pages/ClassesPage";
+import ClassDetailPage from "./pages/ClassDetailPage";
+import ManagePage from "./pages/ManagePage";
 import { useState } from "react";
 
 const PAGE_TO_PATH = {
@@ -36,6 +42,7 @@ const PAGE_TO_PATH = {
   dashboard: "/dashboard",
   admin: "/admin",
   reset: "/reset-password",
+  classes: "/classes",
 };
 
 const PATH_TO_PAGE = {
@@ -44,6 +51,7 @@ const PATH_TO_PAGE = {
   "/dashboard": "dashboard",
   "/admin": "admin",
   "/reset-password": "reset",
+  "/classes": "classes",
 };
 
 // Scroll to top on every route change (mirrors old handleBook behavior).
@@ -60,7 +68,10 @@ function Shell() {
   const [searchParams] = useSearchParams();
   const [showAuth, setShowAuth] = useState(false);
 
-  const currentPage = PATH_TO_PAGE[location.pathname] || "home";
+  const currentPage =
+    PATH_TO_PAGE[location.pathname] ||
+    (location.pathname.startsWith("/class/") ? "classes" : null) ||
+    (location.pathname.startsWith("/manage") ? "manage" : "home");
 
   // Adapter so existing pages keep working: setPage("dashboard") etc.
   const setPage = (id) => navigate(PAGE_TO_PATH[id] || "/");
@@ -75,7 +86,10 @@ function Shell() {
     return <Navigate to={`/reset-password?token=${legacyToken}`} replace />;
   }
 
-  if (bootstrapping && location.pathname !== "/reset-password") {
+  // Class pages and /manage don't depend on the MentorHub login, so they
+  // render without waiting for it (faster first paint for reel visitors).
+  const skipBootWait = ["reset", "classes", "manage"].includes(currentPage);
+  if (bootstrapping && !skipBootWait) {
     return (
       <div className="min-h-screen bg-dark text-white flex items-center justify-center">
         <div className="text-gray-400 text-sm">Loading…</div>
@@ -83,7 +97,7 @@ function Shell() {
     );
   }
 
-  const hideNavbar = currentPage === "reset";
+  const hideNavbar = currentPage === "reset" || currentPage === "manage";
 
   return (
     <div className="min-h-screen bg-dark text-white">
@@ -103,6 +117,9 @@ function Shell() {
         <Route path="/reset-password" element={
           <ResetPasswordPage token={searchParams.get("token")} setPage={setPage} />
         } />
+        <Route path="/classes" element={<ClassesPage />} />
+        <Route path="/class/:slug" element={<ClassDetailPage />} />
+        <Route path="/manage" element={<ManagePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 

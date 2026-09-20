@@ -9,6 +9,7 @@ import { FAQS } from "../data/constants";
 import PackageCard from "../components/PackageCard";
 import Footer from "../components/Footer";
 import TestimonialForm from "../components/TestimonialForm";
+import ClassesSection from "../sections/ClassesSection";
 
 const TEXTS = ["Vigyana Bhairava Tantra", "Kashmir Shaivism", "Advaita Vedanta", "The Upanishads"];
 
@@ -106,6 +107,11 @@ export default function HomePage({ onBook }) {
           </div>
         </div>
       </div>
+
+      {/* ============================================================
+          GROUP CLASSES — renders nothing when none are scheduled
+      ============================================================ */}
+      <ClassesSection />
 
       {/* ============================================================
           SESSIONS
