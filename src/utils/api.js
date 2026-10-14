@@ -46,10 +46,18 @@ export const bookingAPI = {
   reschedule: (id, date, timeSlot, message) => request("PUT", `/bookings/${id}/reschedule`, { date, timeSlot, message }),
 };
 
-export const paymentAPI = {
-  // amount no longer sent — server uses packageId
-  createOrder: (packageId) => request("POST", "/payments/create-order", { packageId }),
-  verify: (data) => request("POST", "/payments/verify", data),
+// Razorpay online payments. Amount always comes from the server.
+export const rzpAPI = {
+  config: () => request("GET", "/rzp/config"),
+  // { packageId, date, timeSlot, studentInfo } → order for checkout (also holds the slot)
+  order: (data) => request("POST", "/rzp/order", data),
+  // { razorpay_order_id, razorpay_payment_id, razorpay_signature }
+  verify: (data) => request("POST", "/rzp/verify", data),
+};
+
+// UPI QR uploaded from MentorHub Admin → Payments (talkWithShivah = "meditation")
+export const settingsAPI = {
+  getUpiQr: (brand = "meditation") => request("GET", `/settings/upi-qr?brand=${brand}`),
 };
 
 export const slotAPI = {
